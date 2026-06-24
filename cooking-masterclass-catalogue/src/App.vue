@@ -1,64 +1,73 @@
 <template>
-  <div id="app">
-    <Header :wishlistCount="wishlist.length" />
-    <main class="container">
-      <div class="filters">
-        <label>Filter: </label>
-        <select v-model="filterSelection">
-          <option value="all">All Modules</option>
-          <option value="available">Available Only</option>
-        </select>
+  <div>
+    <AppHeader :wishlistCount="wishlistCount" />
+
+    <main class="catalogue">
+      <h2 class="section-title">Available Courses</h2>
+      <div class="card-grid">
+        <CourseCard
+          v-for="course in courses"
+          :key="course.id"
+          :course="course"
+          @save-course="addToWishlist"
+        />
       </div>
-      
-      <CourseList 
-        :courses="visibleCourses" 
-        :wishlist="wishlist"
-        @toggle-wishlist="toggleWishlistItem"
-      />
     </main>
   </div>
 </template>
 
 <script>
-import Header from './components/Header.vue';
-import CourseList from './components/CourseList.vue';
-import { courseData } from './courses';
+import AppHeader from "./components/AppHeader.vue"
+import CourseCard from "./components/CourseCard.vue"
+import courses from "./courses.js"
 
 export default {
-  name: 'App',
-  components: { Header, CourseList },
+  name: "App",
+  components: {
+    AppHeader,
+    CourseCard
+  },
   data() {
     return {
-      courses: courseData,
-      wishlist: [],
-      filterSelection: 'all'
-    };
-  },
-  computed: {
-    visibleCourses() {
-      if (this.filterSelection === 'available') {
-        return this.courses.filter(c => c.isAvailable);
-      }
-      return this.courses;
+      courses: courses,
+      wishlistCount: 0
     }
   },
   methods: {
-    toggleWishlistItem(id) {
-      const position = this.wishlist.indexOf(id);
-      if (position === -1) {
-        this.wishlist.push(id);
-      } else {
-        this.wishlist.splice(position, 1);
-      }
+    addToWishlist() {
+      this.wishlistCount++
     }
   }
 }
 </script>
 
 <style>
-body { margin: 0; font-family: sans-serif; background: #f8f9fa; }
-.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-.filters { margin: 20px 0 0 0; }
-.filters select { padding: 6px; border-radius: 4px; }
-</style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
 
+body {
+  background-color: #f4f7f4;
+}
+
+.catalogue {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+</style>
